@@ -1219,6 +1219,27 @@ test( "JIT compilation does not interfere with length retrieval (gh-2145)", func
 		"numeric indices (gh-2145 JIT iOS 8 bug)" );
 });
 
+test( "JIT compilation does not interfere with length retrieval (gh-2145)", function() {
+	expect( 4 );
+
+	var i;
+
+	// Trigger JIT compilation of jQuery.each – and therefore isArraylike – in iOS.
+	// Convince JSC to use one of its optimizing compilers
+	// by providing code which can be LICM'd into nothing.
+	for ( i = 0; i < 1000; i++ ) {
+		jQuery.each( [] );
+	}
+
+	i = 0;
+	jQuery.each( { 1: "1", 2: "2", 3: "3" }, function( index ) {
+		equal( ++i, index, "Iteration over object with solely " +
+			"numeric indices (gh-2145 JIT iOS 8 bug)" );
+	});
+	equal( i, 3, "Iteration over object with solely " +
+		"numeric indices (gh-2145 JIT iOS 8 bug)" );
+});
+
 test("jQuery.makeArray", function(){
 	expect(15);
 
